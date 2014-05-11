@@ -109,18 +109,22 @@ int net_connect( int *fd, const char *host, int port )
     signal( SIGPIPE, SIG_IGN );
 #endif
 
-    if( ( server_host = gethostbyname( host ) ) == NULL )
-        return( POLARSSL_ERR_NET_UNKNOWN_HOST );
+	memset( &server_addr, 0, sizeof(server_addr) );
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = net_htons (port);	
+
+    if( ( server_host = gethostbyname( host ) ) == NULL ){
+		server_addr.sin_addr.s_addr = inet_addr( host );
+		if ( server_addr.sin_addr.s_addr == INADDR_NONE )
+	        return( POLARSSL_ERR_NET_UNKNOWN_HOST );
+	}else{
+		memcpy( (void *) &server_addr.sin_addr,
+				(void *) server_host->h_addr,
+						 server_host->h_length );
+	}
 
     if( ( *fd = socket( AF_INET, SOCK_STREAM, IPPROTO_IP ) ) < 0 )
         return( POLARSSL_ERR_NET_SOCKET_FAILED );
-
-    memcpy( (void *) &server_addr.sin_addr,
-            (void *) server_host->h_addr,
-                     server_host->h_length );
-
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port   = net_htons( port );
 
     if( connect( *fd, (struct sockaddr *) &server_addr,
                  sizeof( server_addr ) ) < 0 )
