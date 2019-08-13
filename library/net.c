@@ -178,12 +178,12 @@ int net_bind( int *fd, const char *bind_ip, int port )
             if( c[n] < 0 || c[n] > 255 )
                 break;
 
-        if( n == 4 )
-            server_addr.sin_addr.s_addr =
-                ( (unsigned long) c[0] << 24 ) |
-                ( (unsigned long) c[1] << 16 ) |
-                ( (unsigned long) c[2] <<  8 ) |
-                ( (unsigned long) c[3]       );
+        if( n == 4 ){
+			server_addr.sin_addr.S_un.S_un_b.s_b1=c[0];
+			server_addr.sin_addr.S_un.S_un_b.s_b2=c[1];
+			server_addr.sin_addr.S_un.S_un_b.s_b3=c[2];
+			server_addr.sin_addr.S_un.S_un_b.s_b4=c[3];
+		}
     }
 
     if( bind( *fd, (struct sockaddr *) &server_addr,
