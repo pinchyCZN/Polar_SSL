@@ -136,7 +136,7 @@
  *
  * Enable all SSL/TLS debugging messages.
  */
-#define POLARSSL_DEBUG_MSG
+//#define POLARSSL_DEBUG_MSG
 
 /**
  * \def POLARSSL_GENPRIME
